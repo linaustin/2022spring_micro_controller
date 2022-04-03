@@ -3,7 +3,7 @@
   * @file      startup_stm32.s dedicated to STM32L476RGTx device
   * @author    Ac6
   * @version   V1.0.0
-  * @date      2022-03-29
+  * @date      2022-04-09
   ******************************************************************************
   */
 

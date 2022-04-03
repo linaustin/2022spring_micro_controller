@@ -4,25 +4,19 @@
 #include "stm32l476xx.h"
 #include "gpio_function.h"
 
-struct SegData{
+typedef struct{
 	GPIO_TypeDef* gpio;
 	int DIN;
 	int CS;
 	int CLK;
-};
+}seg_Pin_Data;
 
-struct SegData* seg_Gpio;
-uint8_t  decode_State = 0;
+seg_Pin_Data seg_Data;
+seg_Pin_Data* seg_Gpio;
 
 int init_7seg(GPIO_TypeDef* gpio, int DIN, int CS, int CLK);
 
-void all_Decode_Mode();
-void all_No_Decode_Mode();
 void send_7seg_Msg(uint8_t address, uint8_t data);
-void send_7seg_Int(int digit, int data);
-void send_7seg_Char(int digit, char data);
-
-
 
 
 // Max7219 Serial_Data_Address
@@ -44,14 +38,6 @@ void send_7seg_Char(int digit, char data);
 //Max7219 Decode_Mode_Data
 #define Seg_All_Decode		0xFF
 #define Seg_All_No_Decode 	0x00
-#define Seg_Digit0_Decode	0x01
-#define Seg_Digit1_Decode	0x02
-#define Seg_Digit2_Decode	0x04
-#define Seg_Digit3_Decode	0x08
-#define Seg_Digit4_Decode	0x10
-#define Seg_Digit5_Decode	0x20
-#define Seg_Digit6_Decode	0x40
-#define Seg_Digit7_Decode	0x80
 
 //Max7219 Shutdown_Data
 #define Seg_Shutdown_Data	0x00
@@ -110,11 +96,5 @@ void send_7seg_Char(int digit, char data);
 #define Seg_No_Decode_Data_L		0x0E
 #define Seg_No_Decode_Data_P		0x67
 #define Seg_No_Decode_Data_Blank	0x00
-
-
-
-
-
-
 
 #endif
