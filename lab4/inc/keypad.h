@@ -2,6 +2,7 @@
 #define __keypad__H__
 
 #include "stm32l476xx.h"
+#include "helper_functions.h"
 
 extern const int keypad[4][4];
 

@@ -2,46 +2,41 @@
 
 uint8_t  decode_State = 0;
 
-int init_7seg(GPIO_TypeDef* gpio, int DIN, int CS, int CLK){
-	if(gpio == GPIOA){
+int init_7seg(Seg_TypeDef* seg_Data){
+	if(seg_Data->gpio == GPIOA){
 			RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;
 		}
-		else if(gpio == GPIOB){
+		else if(seg_Data->gpio == GPIOB){
 			RCC->AHB2ENR |= RCC_AHB2ENR_GPIOBEN;
 		}
-		else if(gpio == GPIOC){
+		else if(seg_Data->gpio == GPIOC){
 			RCC->AHB2ENR |= RCC_AHB2ENR_GPIOCEN;
 		}
 		else{
 			return -1;
 		}
 
-	gpio->MODER &= ~(0b11 << (2*DIN));
-	gpio->MODER |= (0b01 << (2*DIN));
-	gpio->MODER &= ~(0b11 << (2*CS));
-	gpio->MODER |= (0b01 << (2*CS));
-	gpio->MODER &= ~(0b11 << (2*CLK));
-	gpio->MODER |= (0b01 << (2*CLK));
+	seg_Data->gpio->MODER &= ~(0b11 << (2*seg_Data->DIN));
+	seg_Data->gpio->MODER |= (0b01 << (2*seg_Data->DIN));
+	seg_Data->gpio->MODER &= ~(0b11 << (2*seg_Data->CS));
+	seg_Data->gpio->MODER |= (0b01 << (2*seg_Data->CS));
+	seg_Data->gpio->MODER &= ~(0b11 << (2*seg_Data->CLK));
+	seg_Data->gpio->MODER |= (0b01 << (2*seg_Data->CLK));
 
-	seg_Gpio.gpio = gpio;
-	seg_Gpio.DIN = DIN;
-	seg_Gpio.CLK = CLK;
-	seg_Gpio.CS = CS;
-
-	all_Decode_Mode();
-	send_7seg_Msg(Seg_Intensity_Address, Seg_Intensity_15);
-	send_7seg_Msg(Seg_Scan_Limit_Address, 0x07);
-	send_7seg_Msg(Seg_Shutdown_Address, Seg_Wakeup_Data);
-	send_7seg_Msg(Seg_Display_Test_Address, 0x00);
+	all_No_Decode_Mode();
+	send_7seg_Msg(seg_Data, Seg_Intensity_Address, Seg_Intensity_15);
+	send_7seg_Msg(seg_Data, Seg_Scan_Limit_Address, 0x07);
+	send_7seg_Msg(seg_Data, Seg_Shutdown_Address, Seg_Wakeup_Data);
+	send_7seg_Msg(seg_Data, Seg_Display_Test_Address, 0x00);
 
 	for(int i = 0; i < 8; i++){
-		send_7seg_Int(i,-1);
+		send_7seg_Int(seg_Data, i, -1, 0);
 	}
 
 	return 0;
 }
 
-void send_7seg_Msg(uint8_t address, uint8_t data){
+void send_7seg_Msg(Seg_TypeDef* seg_Data, uint8_t address, uint8_t data){
 	uint16_t msg = 0;
 	msg |= address;
 	msg = msg << (8);
@@ -49,46 +44,46 @@ void send_7seg_Msg(uint8_t address, uint8_t data){
 
 	for(int i = 0; i < 17; i++){
 
-		reset_Gpio(seg_Gpio.gpio, seg_Gpio.CLK);
+		reset_Gpio(seg_Data->gpio, seg_Data->CLK);
 
 		if(i < 16){
 			if((msg >> (15-i)) & 0x01){
-				set_Gpio(seg_Gpio.gpio, seg_Gpio.DIN);
+				set_Gpio(seg_Data->gpio, seg_Data->DIN);
 			}
 			else{
-				reset_Gpio(seg_Gpio.gpio, seg_Gpio.DIN);
+				reset_Gpio(seg_Data->gpio, seg_Data->DIN);
 			}
 
-			reset_Gpio(seg_Gpio.gpio, seg_Gpio.CS);
+			reset_Gpio(seg_Data->gpio, seg_Data->CS);
 		}
 		else{
-			reset_Gpio(seg_Gpio.gpio, seg_Gpio.DIN);
-			set_Gpio(seg_Gpio.gpio, seg_Gpio.CS);
+			reset_Gpio(seg_Data->gpio, seg_Data->DIN);
+			set_Gpio(seg_Data->gpio, seg_Data->CS);
 		}
 
-		set_Gpio(seg_Gpio.gpio, seg_Gpio.CLK);
+		set_Gpio(seg_Data->gpio, seg_Data->CLK);
 	}
 
 	return;
 }
 
-void all_Decode_Mode(){
+void all_Decode_Mode(Seg_TypeDef* seg_Data){
 	decode_State = 0;
 
-	send_7seg_Msg(Seg_Decode_Mode_Address, Seg_All_Decode);
+	send_7seg_Msg(seg_Data, Seg_Decode_Mode_Address, Seg_All_Decode);
 
 	return;
 }
 
-void all_No_Decode_Mode(){
+void all_No_Decode_Mode(Seg_TypeDef* seg_Data){
 	decode_State = 1;
 
-	send_7seg_Msg(Seg_Decode_Mode_Address, Seg_All_No_Decode);
+	send_7seg_Msg(seg_Data, Seg_Decode_Mode_Address, Seg_All_No_Decode);
 
 	return;
 }
 
-void send_7seg_Int(int digit, int data){
+void send_7seg_Int(Seg_TypeDef* seg_Data, int digit, int data, uint8_t point){
 	uint8_t address = (uint8_t)(digit+1);
 	uint8_t msg = 0;
 
@@ -181,18 +176,38 @@ void send_7seg_Int(int digit, int data){
 				msg = Seg_No_Decode_Data_9;
 				break;
 
+			case 10:
+				msg = Seg_No_Decode_Data_P;
+				break;
+
+			case 11:
+				msg = Seg_No_Decode_Data_S;
+				break;
+
+			case 12:
+				msg = Seg_No_Decode_Data_H;
+				break;
+
+			case 13:
+				msg = Seg_No_Decode_Data_d;
+				break;
+
 			default:
 				msg = Seg_No_Decode_Data_Blank;
 				break;
 		}
 	}
 
-	send_7seg_Msg(address, msg);
+	if(point){
+		msg |= 0x80;
+	}
+
+	send_7seg_Msg(seg_Data, address, msg);
 
 	return;
 }
 
-void send_7seg_Char(int digit, char data){
+void send_7seg_Char(Seg_TypeDef* seg_Data, int digit, char data){
 	uint8_t address = (uint8_t)(digit+1);
 	uint8_t msg = 0x00;
 
@@ -253,7 +268,169 @@ void send_7seg_Char(int digit, char data){
 		}
 	}
 
-	send_7seg_Msg(address, msg);
+	send_7seg_Msg(seg_Data, address, msg);
 
 	return;
 }
+
+void display_Number_Float3(Seg_TypeDef* seg_Data, int number_float3){
+	int temp;
+	uint16_t total_Digit = 0;
+	uint8_t negative = 0;
+	uint8_t decimal = 0;
+
+	if(number_float3 < 0){
+		number_float3 = number_float3 * -1;
+		negative = 1;
+		total_Digit++;
+	}
+
+	if(number_float3 % 1000 != 0){
+		decimal = 1;
+	}
+
+	if(decimal){
+		temp = number_float3;
+
+		while(temp > 0){
+			temp = temp/10;
+			total_Digit++;
+		}
+
+		if(total_Digit > 8){
+			send_7seg_Error(seg_Data);
+			return;
+		}
+
+		if(number_float3 < 1000 && number_float3 > 0){
+			total_Digit++;
+		}
+		else if(number_float3 > -1000 && number_float3 < 0){
+			total_Digit++;
+		}
+		else if( number_float3 == 0){
+			total_Digit = 4;
+		}
+
+		for(int i = 0; i < 8; i++){
+			if(i < total_Digit && i == 3){
+				send_7seg_Int(seg_Data, i, number_float3%10, 1);
+				number_float3 = number_float3/10;
+			}
+			else if(i < total_Digit){
+				if(negative && i == (total_Digit -1)){
+					continue;
+				}
+				send_7seg_Int(seg_Data, i, number_float3%10, 0);
+				number_float3 = number_float3/10;
+			}
+			else{
+				send_7seg_Char(seg_Data, i, ' ');
+			}
+		}
+
+		if(negative){
+			send_7seg_Char(seg_Data, total_Digit-1, '-');
+		}
+	}
+	else{
+		number_float3 = number_float3/1000;
+		temp = number_float3;
+
+		while(temp > 0){
+			temp = temp/10;
+			total_Digit++;
+		}
+
+		if(total_Digit > 8){
+			send_7seg_Error(seg_Data);
+			return;
+		}
+
+		for(int i = 0; i < 8; i++){
+			if(i < total_Digit && i == 0){
+				send_7seg_Int(seg_Data, i, number_float3%10, 1);
+				number_float3 = number_float3/10;
+			}
+			else if(i < total_Digit){
+				if(negative && i == (total_Digit -1)){
+					continue;
+				}
+				send_7seg_Int(seg_Data, i, number_float3%10, 0);
+				number_float3 = number_float3/10;
+			}
+			else{
+				send_7seg_Char(seg_Data, i, ' ');
+			}
+		}
+
+		if(negative){
+			send_7seg_Char(seg_Data, total_Digit-1, '-');
+		}
+	}
+
+	return;
+}
+
+void send_7seg_Error(Seg_TypeDef* seg_Data){
+	all_No_Decode_Mode(seg_Data);
+	send_7seg_Msg(seg_Data, Seg_Digit0_Address, Seg_No_Decode_Data_r);
+	send_7seg_Msg(seg_Data, Seg_Digit1_Address, Seg_No_Decode_Data_r);
+	send_7seg_Msg(seg_Data, Seg_Digit2_Address, Seg_No_Decode_Data_E);
+
+	for(int i = 3; i < 8; i++){
+		send_7seg_Char(seg_Data, i, ' ');
+	}
+
+	return;
+}
+
+void send_7seg_Plus(Seg_TypeDef* seg_Data){
+	all_No_Decode_Mode(seg_Data);
+	send_7seg_Msg(seg_Data, Seg_Digit0_Address, Seg_No_Decode_Data_S);
+	send_7seg_Msg(seg_Data, Seg_Digit1_Address, Seg_No_Decode_Data_U);
+	send_7seg_Msg(seg_Data, Seg_Digit2_Address, Seg_No_Decode_Data_L);
+	send_7seg_Msg(seg_Data, Seg_Digit3_Address, Seg_No_Decode_Data_P);
+
+	for(int i = 4; i < 8; i++){
+			send_7seg_Char(seg_Data, i, ' ');
+	}
+
+	return;
+}
+void send_7seg_Subtraction(Seg_TypeDef* seg_Data){
+	all_No_Decode_Mode(seg_Data);
+	send_7seg_Msg(seg_Data, Seg_Digit0_Address, Seg_No_Decode_Data_8);
+	send_7seg_Msg(seg_Data, Seg_Digit1_Address, Seg_No_Decode_Data_U);
+	send_7seg_Msg(seg_Data, Seg_Digit2_Address, Seg_No_Decode_Data_S);
+
+	for(int i = 3; i < 8; i++){
+			send_7seg_Char(seg_Data, i, ' ');
+	}
+
+	return;
+}
+void send_7seg_Multiplie(Seg_TypeDef* seg_Data){
+	all_No_Decode_Mode(seg_Data);
+	send_7seg_Msg(seg_Data, Seg_Digit0_Address, Seg_No_Decode_Data_L);
+	send_7seg_Msg(seg_Data, Seg_Digit1_Address, Seg_No_Decode_Data_U);
+	send_7seg_Msg(seg_Data, Seg_Digit2_Address, 0xF6);
+	send_7seg_Msg(seg_Data, Seg_Digit3_Address, 0xF6);
+
+	for(int i = 4; i < 8; i++){
+			send_7seg_Char(seg_Data, i, ' ');
+	}
+	return;
+}
+void send_7seg_Divide(Seg_TypeDef* seg_Data){
+	all_No_Decode_Mode(seg_Data);
+	send_7seg_Msg(seg_Data, Seg_Digit0_Address, Seg_No_Decode_Data_i);
+	send_7seg_Msg(seg_Data, Seg_Digit1_Address, Seg_No_Decode_Data_d);
+
+	for(int i = 2; i < 8; i++){
+			send_7seg_Char(seg_Data, i, ' ');
+	}
+
+	return;
+}
+

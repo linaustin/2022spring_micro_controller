@@ -15,7 +15,9 @@ int main(){
 		return -1;
 	}
 
-	send_7seg_Char(7,'-');
+	all_Decode_Mode();
+
+	send_7seg_Char(7,' ');
 
 	for(int i = 0; i < 7; i++){
 		send_7seg_Int((6-i), data[i]);

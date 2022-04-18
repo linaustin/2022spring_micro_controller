@@ -4,23 +4,30 @@
 #include "stm32l476xx.h"
 #include "gpio_function.h"
 
-struct Seg_Struct{
+typedef struct seg_Struct{
 	GPIO_TypeDef* gpio;
 	int DIN;
 	int CS;
 	int CLK;
-};
+}Seg_TypeDef;
 
-struct Seg_Struct seg_Gpio;
 uint8_t  decode_State;
 
-int init_7seg(GPIO_TypeDef* gpio, int DIN, int CS, int CLK);
+int init_7seg( Seg_TypeDef* seg_Data);
 
 void all_Decode_Mode();
 void all_No_Decode_Mode();
-void send_7seg_Msg(uint8_t address, uint8_t data);
-void send_7seg_Int(int digit, int data);
-void send_7seg_Char(int digit, char data);
+void send_7seg_Msg(Seg_TypeDef* seg_Data, uint8_t address, uint8_t data);
+void send_7seg_Int(Seg_TypeDef* seg_Data, int digit, int data, uint8_t point);
+void send_7seg_Char(Seg_TypeDef* seg_Data, int digit, char data);
+void display_Number_Float3(Seg_TypeDef* seg_Data, int number_float3);
+
+void send_7seg_Error(Seg_TypeDef* seg_Data);
+
+void send_7seg_Plus(Seg_TypeDef* seg_Data);
+void send_7seg_Subtraction(Seg_TypeDef* seg_Data);
+void send_7seg_Multiplie(Seg_TypeDef* seg_Data);
+void send_7seg_Divide(Seg_TypeDef* seg_Data);
 
 // Max7219 Serial_Data_Address
 #define Seg_No_Op_Address  			0b0000
@@ -73,6 +80,7 @@ void send_7seg_Char(int digit, char data);
 #define Seg_Intensity_15	0x0F
 
 //Max7219 Decode_Mode_Data
+#define Seg_Decode_Data_Dp		0x80
 #define Seg_Decode_Data_0		0x00
 #define Seg_Decode_Data_1		0x01
 #define Seg_Decode_Data_2		0x02
@@ -91,6 +99,7 @@ void send_7seg_Char(int digit, char data);
 #define Seg_Decode_Data_Blank	0x0F
 
 //Max7219 No_Decode_Mode_Data
+#define Seg_No_Decode_Data_Dp		0x80
 #define Seg_No_Decode_Data_0 		0x7E
 #define Seg_No_Decode_Data_1    	0x30
 #define Seg_No_Decode_Data_2		0x6D
@@ -106,6 +115,11 @@ void send_7seg_Char(int digit, char data);
 #define Seg_No_Decode_Data_H		0x37
 #define Seg_No_Decode_Data_L		0x0E
 #define Seg_No_Decode_Data_P		0x67
+#define Seg_No_Decode_Data_S		0x5B
+#define Seg_No_Decode_Data_U		0xBE
+#define Seg_No_Decode_Data_r		0x05
+#define Seg_No_Decode_Data_i		0x10
+#define Seg_No_Decode_Data_d		0x3D
 #define Seg_No_Decode_Data_Blank	0x00
 
 #endif
