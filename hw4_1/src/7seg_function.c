@@ -289,7 +289,7 @@ void display_Number_Float3(Seg_TypeDef* seg_Data, int number_float3){
 		decimal = 1;
 	}
 
-	if(decimal){
+	if(decimal || number_float3 == 0){
 		temp = number_float3;
 
 		while(temp > 0){
@@ -375,10 +375,12 @@ void display_Number_Float3(Seg_TypeDef* seg_Data, int number_float3){
 void send_7seg_Error(Seg_TypeDef* seg_Data){
 	all_No_Decode_Mode(seg_Data);
 	send_7seg_Msg(seg_Data, Seg_Digit0_Address, Seg_No_Decode_Data_r);
-	send_7seg_Msg(seg_Data, Seg_Digit1_Address, Seg_No_Decode_Data_r);
-	send_7seg_Msg(seg_Data, Seg_Digit2_Address, Seg_No_Decode_Data_E);
+	send_7seg_Msg(seg_Data, Seg_Digit1_Address, Seg_No_Decode_Data_o);
+	send_7seg_Msg(seg_Data, Seg_Digit2_Address, Seg_No_Decode_Data_r);
+	send_7seg_Msg(seg_Data, Seg_Digit3_Address, Seg_No_Decode_Data_r);
+	send_7seg_Msg(seg_Data, Seg_Digit4_Address, Seg_No_Decode_Data_E);
 
-	for(int i = 3; i < 8; i++){
+	for(int i = 5; i < 8; i++){
 		send_7seg_Char(seg_Data, i, ' ');
 	}
 

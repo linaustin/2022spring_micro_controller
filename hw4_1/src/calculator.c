@@ -196,7 +196,7 @@ int calculator_Cal(int* command){
 				}
 			}
 
-			scanner[0] = (scanner[0]/1000)*(scanner[2]/1000)*1000;
+			scanner[0] = (scanner[0]*(scanner[2]/1000));
 			command[read_Pointer] = scanner[0];
 			scanner[0] = -1;
 			scanner[1] = -1;

@@ -20,7 +20,7 @@ void all_No_Decode_Mode();
 void send_7seg_Msg(Seg_TypeDef* seg_Data, uint8_t address, uint8_t data);
 void send_7seg_Int(Seg_TypeDef* seg_Data, int digit, int data, uint8_t point);
 void send_7seg_Char(Seg_TypeDef* seg_Data, int digit, char data);
-void display_Number(Seg_TypeDef* seg_Data, int number_float3);
+void display_Number_Float3(Seg_TypeDef* seg_Data, int number_float3);
 
 void send_7seg_Error(Seg_TypeDef* seg_Data);
 
@@ -117,9 +117,12 @@ void send_7seg_Divide(Seg_TypeDef* seg_Data);
 #define Seg_No_Decode_Data_P		0x67
 #define Seg_No_Decode_Data_S		0x5B
 #define Seg_No_Decode_Data_U		0xBE
-#define Seg_No_Decode_Data_r		0x05
-#define Seg_No_Decode_Data_i		0x10
 #define Seg_No_Decode_Data_d		0x3D
+#define Seg_No_Decode_Data_i		0x10
+#define Seg_No_Decode_Data_o        0x1D
+#define Seg_No_Decode_Data_r		0x05
+
+
 #define Seg_No_Decode_Data_Blank	0x00
 
 #endif

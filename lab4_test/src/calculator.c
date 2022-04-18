@@ -77,7 +77,8 @@ void calculator_Run(Keypad_TypeDef* keypad_Data, Seg_TypeDef* seg_Data){
 						return;
 					}
 
-					display_Push_Flag = i;
+					display_Push_Flag = 4;
+					display_Operator = i;
 					command_Buffer[command_Pointer + 1] = (-1 * i);
 					command_Buffer[command_Pointer] = (input_Buffer[2]*100) + (input_Buffer[1]*10) + (input_Buffer[0]);
 					command_Pointer = command_Pointer + 2;
@@ -121,27 +122,20 @@ void calculator_Run(Keypad_TypeDef* keypad_Data, Seg_TypeDef* seg_Data){
 }
 
 void calculator_Display(Seg_TypeDef* seg_Data){
-	uint8_t count = 0;
+	if(display_Push_Flag != 0){
+		for(int i = 7; i > 0; i--){
+			display_Data[i] = display_Data[i - 1];
+		}
 
-	for(int i = 2; i > -1; i--){
-		if(input_Buffer[i] == 0){
-			count++;
+		if(display_Operator != 0){
+			display_Data[0] = display_Operator;
+			display_Operator = 0;
 		}
 		else{
-			break;
-		}
-	}
-
-	if(display_Push_Flag != 0){
-		for(int i = 7; i > 3; i--){
-			display_Data[i] = display_Data[i - 4];
+			display_Data[0] = input_Buffer[0];
 		}
 
-		display_Data[3] = display_Push_Flag;
-
-		for(int i = 0; i < 3; i++){
-			display_Data[i] = -1;
-		}
+		display_Push_Flag--;
 	}
 	else{
 		for(int i = 0; i < 3; i++){
@@ -150,10 +144,13 @@ void calculator_Display(Seg_TypeDef* seg_Data){
 	}
 
 	for(int i = 0; i < 8; i++){
-		send_7seg_Int(seg_Data, i, display_Data[i], 0);
+		if(display_Data[i] > 9){
+			send_7seg_Int(seg_Data, i, display_Data[i], 1);
+		}
+		else{
+			send_7seg_Int(seg_Data, i, display_Data[i], 0);
+		}
 	}
-
-	display_Push_Flag = 0;
 	return;
 }
 
@@ -199,7 +196,7 @@ int calculator_Cal(int* command){
 				}
 			}
 
-			scanner[0] = (scanner[0]/1000)*(scanner[2]/1000)*1000;
+			scanner[0] = (scanner[0]*(scanner[2]/1000));
 			command[read_Pointer] = scanner[0];
 			scanner[0] = -1;
 			scanner[1] = -1;
@@ -230,12 +227,13 @@ int calculator_Cal(int* command){
 				else if(command[j] > -1){
 					scanner[2] = command[j];
 					command[j] = -1;
-					break;
-				}
 
-				if(scanner[2] == 0){
-					error_Flag = 1;
-					return -1;
+					if(scanner[2] == 0){
+						error_Flag = 1;
+						return -1;
+					}
+
+					break;
 				}
 			}
 

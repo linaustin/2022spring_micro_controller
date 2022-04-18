@@ -5,16 +5,16 @@ uint8_t  decode_State = 0;
 int init_7seg(Seg_TypeDef* seg_Data){
 	if(seg_Data->gpio == GPIOA){
 			RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;
-		}
-		else if(seg_Data->gpio == GPIOB){
-			RCC->AHB2ENR |= RCC_AHB2ENR_GPIOBEN;
-		}
-		else if(seg_Data->gpio == GPIOC){
-			RCC->AHB2ENR |= RCC_AHB2ENR_GPIOCEN;
-		}
-		else{
-			return -1;
-		}
+	}
+	else if(seg_Data->gpio == GPIOB){
+		RCC->AHB2ENR |= RCC_AHB2ENR_GPIOBEN;
+	}
+	else if(seg_Data->gpio == GPIOC){
+		RCC->AHB2ENR |= RCC_AHB2ENR_GPIOCEN;
+	}
+	else{
+		return -1;
+	}
 
 	seg_Data->gpio->MODER &= ~(0b11 << (2*seg_Data->DIN));
 	seg_Data->gpio->MODER |= (0b01 << (2*seg_Data->DIN));
@@ -289,7 +289,7 @@ void display_Number_Float3(Seg_TypeDef* seg_Data, int number_float3){
 		decimal = 1;
 	}
 
-	if(decimal){
+	if(decimal || number_float3 == 0){
 		temp = number_float3;
 
 		while(temp > 0){
