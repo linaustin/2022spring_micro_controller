@@ -273,6 +273,105 @@ void send_7seg_Char(Seg_TypeDef* seg_Data, int digit, char data){
 	return;
 }
 
+void display_Number_Float2(Seg_TypeDef* seg_Data, int number_float2){
+	int temp;
+	uint16_t total_Digit = 0;
+	uint8_t negative = 0;
+	uint8_t decimal = 1; // should be 0 but the timer will display 0.00 as the result set to 1;
+
+	if(number_float2 < 0){
+		number_float2 = number_float2 * -1;
+		negative = 1;
+		total_Digit++;
+	}
+
+	if(number_float2 % 100 != 0){
+		decimal = 1;
+	}
+
+	if(decimal || number_float2 == 0){
+		temp = number_float2;
+
+		while(temp > 0){
+			temp = temp/10;
+			total_Digit++;
+		}
+
+		if(total_Digit > 8){
+			send_7seg_Error(seg_Data);
+			return;
+		}
+
+		if(number_float2 < 100 && number_float2 > 0){
+			total_Digit++;
+		}
+		else if(number_float2 > -100 && number_float2 < 0){
+			total_Digit++;
+		}
+		else if( number_float2 == 0){
+			total_Digit = 3;
+		}
+
+		for(int i = 0; i < 8; i++){
+			if(i < total_Digit && i == 2){
+				send_7seg_Int(seg_Data, i, number_float2%10, 1);
+				number_float2 = number_float2/10;
+			}
+			else if(i < total_Digit){
+				if(negative && i == (total_Digit -1)){
+					continue;
+				}
+				send_7seg_Int(seg_Data, i, number_float2%10, 0);
+				number_float2 = number_float2/10;
+			}
+			else{
+				send_7seg_Char(seg_Data, i, ' ');
+			}
+		}
+
+		if(negative){
+			send_7seg_Char(seg_Data, total_Digit-1, '-');
+		}
+	}
+	else{
+		number_float2 = number_float2/1000;
+		temp = number_float2;
+
+		while(temp > 0){
+			temp = temp/10;
+			total_Digit++;
+		}
+
+		if(total_Digit > 8){
+			send_7seg_Error(seg_Data);
+			return;
+		}
+
+		for(int i = 0; i < 8; i++){
+			if(i < total_Digit && i == 0){
+				send_7seg_Int(seg_Data, i, number_float2%10, 1);
+				number_float2 = number_float2/10;
+			}
+			else if(i < total_Digit){
+				if(negative && i == (total_Digit -1)){
+					continue;
+				}
+				send_7seg_Int(seg_Data, i, number_float2%10, 0);
+				number_float2 = number_float2/10;
+			}
+			else{
+				send_7seg_Char(seg_Data, i, ' ');
+			}
+		}
+
+		if(negative){
+			send_7seg_Char(seg_Data, total_Digit-1, '-');
+		}
+	}
+
+	return;
+}
+
 void display_Number_Float3(Seg_TypeDef* seg_Data, int number_float3){
 	int temp;
 	uint16_t total_Digit = 0;
