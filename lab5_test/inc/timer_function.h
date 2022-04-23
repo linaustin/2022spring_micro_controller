@@ -8,7 +8,13 @@ typedef struct tim_Struct{
 
 }Timer_Data;
 
-void system_Clock_Config(int clock_Frequency);
+typedef struct sysclk_Struct{
+	uint8_t pllm;
+	uint8_t plln;
+	uint8_t pllr;
+}Sysclk_Data;
+
+void system_Clock_Config(Sysclk_Data *sysclk_Data);
 
 
 
