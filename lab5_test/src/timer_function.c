@@ -1,43 +1,58 @@
 #include "timer_function.h"
 
-void system_Clock_Config(Sysclk_Data *sysclk_Data){
-
-	RCC->CR |= (0b01 << 0); //enable MSI;
-
-	while(!((RCC->CR >> 1) & 0b01)); //check MSI enable ready
-
-	RCC->CFGR &= ~(0b11 << 0); //clear CFGR SW
-	RCC->CFGR |= (0b00 << 0); //set CFGR SW to MSI
-
-	while(!(((RCC->CFGR >> 2) & 0b11) == 0b00)); //check CFGR SWS MSI ready
-
-	RCC->CR &= ~(0b01 << 24); //disable PLL;
-
-	while(!((RCC->CR >> 25) & 0b01)); //check PLL disable ready
-
-	RCC->PLLCFGR &= ~(0b11 << 0); //clear PLLCFGR¡@SRC
-	RCC->PLLCFGR |= (0b01 << 0); //set PLLSRC MSI
-
-	RCC->PLLCFGR &= ~(0b111 << 4); //clear PLLCFGR PLLM
-	RCC->PLLCFGR |= ((sysclk_Data->pllm) << 4); //set PLLCFGR PLLM
-
-	RCC->PLLCFGR &= ~(0b1111111 << 8); //clear PLLCFGR PLLN;
-	RCC->PLLCFGR |= ((sysclk_Data->plln) << 8); //set PLLCFGR PLLN;
-
-	RCC->PLLCFGR &= ~(0b11 << 25); //clear PLLCFGR PLLR
-	RCC->PLLCFGR |= ((sysclk_Data->pllr) << 25); //set PLLCFGR PLLR
-
-	RCC->PLLCFGR |= RCC_PLLCFGR_PLLREN; // enable PLLR
-
-	RCC->CR &= ~(0b01 << 24); //clear RCCCR PLL
-	RCC->CR |= (0b01 << 24); //enable PLL
-
-	while(!((RCC->CR >> 25) & 0b01)); //check PLL enable
-
-	RCC->CFGR &= ~(0b11 << 0); //clear CFGR SW
-	RCC->CFGR |= (0b11 << 0); //set CFGR SW to PLL
-
-	while(!(((RCC->CFGR >> 2) & 0b11) == 0b11)); //check CFGR SWS PLL ready
+void timer_Enable(TIM_TypeDef *tim){
+	if(tim == TIM2){
+		RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;
+	}
+	else if(tim == TIM3){
+		RCC->APB1ENR1 |= RCC_APB1ENR1_TIM3EN;
+	}
 
 	return;
 }
+
+void timer_Disable(TIM_TypeDef *tim){
+	if(tim == TIM2){
+		RCC->APB1ENR1 &= ~RCC_APB1ENR1_TIM2EN;
+	}
+	else if(tim == TIM3){
+		RCC->APB1ENR1 &= ~RCC_APB1ENR1_TIM3EN;
+	}
+
+	return;
+}
+
+void timer_Reload(TIM_TypeDef *tim){
+	tim->EGR |= TIM_EGR_UG;
+	return;
+}
+
+void timer_Start(TIM_TypeDef *tim){
+	tim->CR1 |= TIM_CR1_CEN;
+	return;
+}
+
+void timer_Stop(TIM_TypeDef *tim){
+	tim->CR1 &= ~TIM_CR1_CEN;
+	return;
+}
+
+void timer_Init(TIM_TypeDef *tim, Timer_Init_Data *timer_Data){
+	tim->ARR = (uint32_t)timer_Data->ARR;
+	tim->PSC = (uint32_t)timer_Data->PSC;
+	tim->EGR |= TIM_EGR_UG;
+	return;
+}
+
+void timer_PWM_Init(TIM_TypeDef *tim, Timer_PWM_Init_Data *timer_Data){
+	if((tim == TIM2) && (timer_Data->channel == 1)){
+		tim->ARR = (uint32_t)timer_Data->ARR;
+		tim->PSC = (uint32_t)timer_Data->PSC;
+
+		gpio_AF_Init(GPIOA, 0, 0b0001); // TIM2_CH1¡@= PA0(AF1)  init PA0 AF1 function
+
+
+	}
+	return;
+}
+

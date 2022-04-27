@@ -32,7 +32,7 @@ int read_Button(GPIO_TypeDef* gpio, int pin){
 			count++;
 		}
 
-		delay(1);
+		delay_Loop(1);
 	}
 
 	if(count > 70){

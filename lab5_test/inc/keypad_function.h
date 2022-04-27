@@ -14,7 +14,7 @@ typedef struct keypad_Struct{
 
 const int keypad_Map[4][4];
 
-int init_Keypad(Keypad_TypeDef* keypad_Data);
+int keypad_Init(Keypad_TypeDef* keypad_Data);
 uint16_t read_Keypad(Keypad_TypeDef* keypad_Data);
 
 #endif

@@ -44,24 +44,24 @@ void send_7seg_Msg(Seg_TypeDef* seg_Data, uint8_t address, uint8_t data){
 
 	for(int i = 0; i < 17; i++){
 
-		reset_Gpio(seg_Data->gpio, seg_Data->CLK);
+		gpio_Reset(seg_Data->gpio, seg_Data->CLK);
 
 		if(i < 16){
 			if((msg >> (15-i)) & 0x01){
-				set_Gpio(seg_Data->gpio, seg_Data->DIN);
+				gpio_Set(seg_Data->gpio, seg_Data->DIN);
 			}
 			else{
-				reset_Gpio(seg_Data->gpio, seg_Data->DIN);
+				gpio_Reset(seg_Data->gpio, seg_Data->DIN);
 			}
 
-			reset_Gpio(seg_Data->gpio, seg_Data->CS);
+			gpio_Reset(seg_Data->gpio, seg_Data->CS);
 		}
 		else{
-			reset_Gpio(seg_Data->gpio, seg_Data->DIN);
-			set_Gpio(seg_Data->gpio, seg_Data->CS);
+			gpio_Reset(seg_Data->gpio, seg_Data->DIN);
+			gpio_Set(seg_Data->gpio, seg_Data->CS);
 		}
 
-		set_Gpio(seg_Data->gpio, seg_Data->CLK);
+		gpio_Set(seg_Data->gpio, seg_Data->CLK);
 	}
 
 	return;

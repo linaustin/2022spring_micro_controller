@@ -3,13 +3,11 @@
 
 #include "stm32l476xx.h"
 
-int init_Gpio(GPIO_TypeDef* gpio, int pin);
-int read_Gpio(GPIO_TypeDef* gpio, int pin);
-
-void set_Gpio(GPIO_TypeDef* gpio, int pin);
-void reset_Gpio(GPIO_TypeDef* gpio, int pin);
-void toggle_Gpio(GPIO_TypeDef* gpio, int pin);
-
-void delay(int msec);
+int gpio_Init(GPIO_TypeDef *gpio, int pin);
+int gpio_AF_Init(GPIO_TypeDef *gpio, int pin, uint8_t AF);
+int gpio_Read(GPIO_TypeDef *gpio, int pin);
+void gpio_Set(GPIO_TypeDef *gpio, int pin);
+void gpio_Reset(GPIO_TypeDef *gpio, int pin);
+void gpio_Toggle(GPIO_TypeDef *gpio, int pin);
 
 #endif
