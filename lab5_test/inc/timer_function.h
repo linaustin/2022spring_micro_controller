@@ -10,12 +10,11 @@ typedef struct tim_Init_Data_Struct{
 }Timer_Init_Data;
 
 typedef struct tim_PWM_Init_Data_Struct{
+	uint8_t channel;
 	int PSC;
 	int ARR;
-	uint8_t channel;
-	uint8_t OCxM;
-	uint8_t CCxP;
-	uint8_t CCxE;
+	int CCRx;
+	uint8_t CCxP; // 0 = active high 1 = active low
 }Timer_PWM_Init_Data;
 
 void timer_Enable(TIM_TypeDef *tim);
