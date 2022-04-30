@@ -30,9 +30,9 @@ void system_Clock_Config(Sysclk_Data *sysclk_Data){
 
 	RCC->CR &= ~(0b01 << 24); //disable PLL;
 
-	while(!((RCC->CR >> 25) & 0b01)); //check PLL disable ready
+	while(((RCC->CR >> 25) & 0b01)); //check PLL disable ready
 
-	RCC->PLLCFGR &= ~(0b11 << 0); //clear PLLCFGR¡@SRC
+	RCC->PLLCFGR &= ~(0b11 << 0); //clear PLLCFGRï¿½@SRC
 	RCC->PLLCFGR |= (0b01 << 0); //set PLLSRC MSI
 
 	RCC->PLLCFGR &= ~(0b111 << 4); //clear PLLCFGR PLLM
@@ -58,3 +58,21 @@ void system_Clock_Config(Sysclk_Data *sysclk_Data){
 
 	return;
 }
+
+Sysclk_Data sysclk_1khz = {
+	.plln = 8,
+	.pllr = 3,
+	.pllm = 3
+};
+
+Sysclk_Data sysclk_10Mhz = {
+	.plln = 10,
+	.pllr = 1,
+	.pllm = 0
+};
+
+Sysclk_Data sysclk_40Mhz = {
+	.plln = 40,
+	.pllr = 1,
+	.pllm = 0
+};
