@@ -1,19 +1,16 @@
 #include "stm32l476xx.h"
-#include "gpio_function.h"
-#include "button_function.h"
-#include "7seg_function.h"
-#include "keypad_function.h"
-#include "timer_function.h"
+#include "music.h"
 #include "system_function.h"
+#include <stdio.h>
 
 Seg_TypeDef seg_Gpio = {
 	.gpio = GPIOC,
-	.DIN = 1,
-	.CS = 2,
-	.CLK = 3
+	.DIN = 3,
+	.CS = 4,
+	.CLK = 5
 };
 
-Keypad_TypeDef keypad_Gpio = {
+Keypad_TypeDef keypad_Gpio ={
 		.out_Gpio[0] = GPIOB,
 		.out_Pin[0] = 6,
 
@@ -39,25 +36,23 @@ Keypad_TypeDef keypad_Gpio = {
 		.in_Pin[3] = 7
 };
 
-uint32_t count = 0;
-
 int main(){
 
-	system_Clock_Config(&sysclk_1Mhz);
+	system_Clock_Config(&sysclk_40Mhz);
+	keypad_Init(&keypad_Gpio);
+	init_7seg(&seg_Gpio);
+	music_Init();
 
-	Timer_Init_Data clock = {
-		.PSC = 10000 - 1,
-		.ARR = 1000 - 1
-	};
-
-	timer_Enable(TIM2);
-	timer_Init(TIM2, &clock);
-	timer_Start(TIM2);
+	int input_Note[7] = {1,1,5,5,6,6,5};
 
 	while(1){
+		for(int i = 0; i < 7; i++){
+			music_Play(input_Note[i]);
+			delay_Loop(2000);
+			timer_Channel_Stop(TIM2, 1);
+			delay_Loop(1000);
+		}
 
-		count = TIM2->CNT;
 	}
-
 	return 0;
 }

@@ -15,7 +15,10 @@ void delay_Loop(int msec);
 void system_Clock_Config(Sysclk_Data *sysclk_Data);
 
 Sysclk_Data sysclk_1Mhz;
+Sysclk_Data sysclk_6Mhz;
 Sysclk_Data sysclk_10Mhz;
+Sysclk_Data sysclk_16Mhz;
+Sysclk_Data sysclk_20Mhz;
 Sysclk_Data sysclk_40Mhz;
 
 #endif

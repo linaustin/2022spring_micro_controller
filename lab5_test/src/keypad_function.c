@@ -64,7 +64,7 @@ int keypad_Init(Keypad_TypeDef* keypad_Data){
 	return 0;
 }
 
-uint16_t read_Keypad(Keypad_TypeDef* keypad_Data){
+uint16_t keypad_Read(Keypad_TypeDef* keypad_Data){
 	uint16_t input = 0;
 	int cnt[4][4];
 	int scan_Cycle = 400;

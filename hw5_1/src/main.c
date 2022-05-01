@@ -9,9 +9,9 @@
 
 Seg_TypeDef seg_Gpio = {
 	.gpio = GPIOC,
-	.DIN = 1,
-	.CS = 2,
-	.CLK = 3
+	.DIN = 3,
+	.CS = 4,
+	.CLK = 5
 };
 
 int main(){

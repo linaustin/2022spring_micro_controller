@@ -1,17 +1,12 @@
 #include "stm32l476xx.h"
-#include "gpio_function.h"
-#include "button_function.h"
-#include "7seg_function.h"
-#include "keypad_function.h"
-#include "timer_function.h"
+#include "music.h"
 #include "system_function.h"
-#include "stdlib.h"
 
 Seg_TypeDef seg_Gpio = {
 	.gpio = GPIOC,
-	.DIN = 1,
-	.CS = 2,
-	.CLK = 3
+	.DIN = 3,
+	.CS = 4,
+	.CLK = 5
 };
 
 Keypad_TypeDef keypad_Gpio ={

@@ -5,7 +5,8 @@
 #include "gpio_function.h"
 #include "system_function.h"
 
-int init_Button(GPIO_TypeDef* gpio, int pin);
-int read_Button(GPIO_TypeDef* gpio, int pin);
+int button_Init(GPIO_TypeDef *gpio, int pin);
+int button_Read(GPIO_TypeDef *gpio, int pin);
+int button_Read_RisingEdge(GPIO_TypeDef *gpio, int pin, int pressed_State);
 
 #endif

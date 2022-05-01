@@ -59,14 +59,34 @@ void system_Clock_Config(Sysclk_Data *sysclk_Data){
 	return;
 }
 
-Sysclk_Data sysclk_1khz = {
+// sysclk = source * plln/2* (pllr + 1) * (pllm + 1)   source MSI = 4Mhz
+
+Sysclk_Data sysclk_1Mhz = {
 	.plln = 8,
 	.pllr = 3,
 	.pllm = 3
 };
 
+Sysclk_Data sysclk_6Mhz = {
+	.plln = 12,
+	.pllr = 0,
+	.pllm = 3
+};
+
 Sysclk_Data sysclk_10Mhz = {
 	.plln = 10,
+	.pllr = 1,
+	.pllm = 0
+};
+
+Sysclk_Data sysclk_16Mhz = {
+	.plln = 8,
+	.pllr = 0,
+	.pllm = 0
+};
+
+Sysclk_Data sysclk_20Mhz = {
+	.plln = 20,
 	.pllr = 1,
 	.pllm = 0
 };

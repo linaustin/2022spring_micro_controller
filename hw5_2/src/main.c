@@ -8,9 +8,9 @@
 
 Seg_TypeDef seg_Gpio = {
 	.gpio = GPIOC,
-	.DIN = 1,
-	.CS = 2,
-	.CLK = 3
+	.DIN = 3,
+	.CS = 4,
+	.CLK = 5
 };
 
 Keypad_TypeDef keypad_Gpio = {
@@ -50,7 +50,7 @@ int main(){
 
 	Timer_Init_Data clock = {
 		.PSC = 10000 - 1,
-		.ARR = 1000 - 1
+		.ARR = 2000 - 1
 	};
 
 	timer_Enable(TIM2);
@@ -59,7 +59,14 @@ int main(){
 
 	while(1){
 		count = TIM2->CNT;
-		display_Number_Float2(&seg_Gpio, (int)count);
+
+		if(count < 1270){
+			display_Number_Float2(&seg_Gpio, (int)count);
+		}
+		else{
+			display_Number_Float2(&seg_Gpio, 1270);
+			timer_Stop(TIM2);
+		}
 	}
 
 
