@@ -4,9 +4,9 @@
 
 Seg_TypeDef seg_Gpio = {
 	.gpio = GPIOC,
-	.DIN = 3,
-	.CS = 4,
-	.CLK = 5
+	.DIN = 0,
+	.CS = 1,
+	.CLK = 2
 };
 
 Keypad_TypeDef keypad_Gpio ={

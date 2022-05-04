@@ -119,4 +119,4 @@ void music_Read_Keypad(uint16_t keypad_Input, Seg_TypeDef *seg_Data){
 	return;
 }
 
-uint32_t note_Arr[8] = {3823, 3405, 3034, 2864, 2551, 2273, 2025, 1911};
+uint32_t note_Arr[8] = {1912, 1704, 1517, 1433, 1276, 1136, 1012, 956};
