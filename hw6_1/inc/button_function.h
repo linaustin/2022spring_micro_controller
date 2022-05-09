@@ -7,6 +7,6 @@
 
 int button_Init(GPIO_TypeDef *gpio, int pin);
 int button_Read(GPIO_TypeDef *gpio, int pin);
-int button_Read_RisingEdge(GPIO_TypeDef *gpio, int pin, int pressed_State); // return 1 when rising edge happen
+int button_Read_RisingEdge(GPIO_TypeDef *gpio, int pin, int pressed_State);
 
 #endif

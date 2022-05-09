@@ -19,8 +19,6 @@ void system_Tick_Stop_IT();
 
 void __attribute__((weak))SysTick_Handler();
 
-void
-
 Sysclk_Data sysclk_1Mhz;
 Sysclk_Data sysclk_6Mhz;
 Sysclk_Data sysclk_10Mhz;
