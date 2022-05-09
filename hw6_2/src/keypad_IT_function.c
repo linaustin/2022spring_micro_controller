@@ -34,6 +34,8 @@ const int  keypad_Map[4][4] = {
 };
 
 int out_Pin_Index = 0;
+int last_Key = 0;
+int debounce_Cnt = 0;
 
 int keypad_IT_Init(){
 	system_Clock_Config(&sysclk_40Mhz);
@@ -92,7 +94,7 @@ int keypad_IT_Init(){
 	}
 
 	for(int i = 0; i < 4; i++){
-		keypad_EXTI_config(keypad_Gpio.in_Gpio[i], keypad_Gpio.in_Pin[i]);
+		keypad_EXTI_Config(keypad_Gpio.in_Gpio[i], keypad_Gpio.in_Pin[i]);
 	}
 
 	NVIC_SetPriorityGrouping(0b101);	//set 2 group priorities 2 sub priorities
@@ -103,21 +105,22 @@ int keypad_IT_Init(){
 	NVIC_SetPriority(EXTI15_10_IRQn, 0b0000);
 	NVIC_EnableIRQ(EXTI15_10_IRQn);
 
-	Timer_Init_Data keypad_Timer ={
-			.PSC = (40*1000) - 1,
-			.ARR = 100 - 1
-	};
-
-	timer_Init(TIM3, &keypad_Timer);
-	timer_Start_IT(TIM3);
-
 	NVIC_SetPriority(TIM3_IRQn, 0b0100);
 	NVIC_EnableIRQ(TIM3_IRQn);
+
+	Timer_Init_Data keypad_Timer ={
+			.PSC = (40*100) - 1, // 10^-4
+			.ARR = (10) - 1
+	};
+
+	timer_Enable(TIM3);
+	timer_Init(TIM3, &keypad_Timer);
+	timer_Start_IT(TIM3);
 
 	return 0;
 }
 
-void keypad_EXTI_config(GPIO_TypeDef *gpio, int pin){
+void keypad_EXTI_Config(GPIO_TypeDef *gpio, int pin){
 	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;	//enable syscfgen
 	//config EXTIx 's gpio
 	if(gpio == GPIOA){
@@ -139,60 +142,69 @@ void keypad_EXTI_config(GPIO_TypeDef *gpio, int pin){
 	return;
 }
 
-uint16_t keypad_Read(Keypad_TypeDef* keypad_Data){
-	uint16_t input = 0;
-	int cnt[4][4];
-	int scan_Cycle = 10;
-
-	for(int i = 0; i < 4; i++){
-		for(int j = 0; j < 4; j++){
-			cnt[i][j] = 0;
-		}
+void keypad_EXTI_Handle(int key){
+	if(last_Key == key){
+		debounce_Cnt++;
+	}
+	else{
+		debounce_Cnt = 0;
 	}
 
-	keypad_Data->out_Gpio[out_Pin_Index]->OTYPER |= (0b01 << (keypad_Data->out_Pin[out_Pin_Index]));
+	last_Key = key;
 
-	for(int count = 0; count < scan_Cycle; count++){
-		for(int j = 0; j < 4; j++){
-			keypad_Data->out_Gpio[j]->OTYPER &= ~(0b01 << (keypad_Data->out_Pin[j]));
-
-			for(int i = 0; i < 4; i++){
-					cnt[i][j] += gpio_Read(keypad_Data->in_Gpio[i], keypad_Data->in_Pin[i]);
-				}
-
-			keypad_Data->out_Gpio[j]->OTYPER |= (0b01 << (keypad_Data->out_Pin[j]));
-		}
-	}
-
-	for(int i = 0; i < 4; i ++){
-		for(int j = 0; j < 4; j++){
-			if(cnt[i][j] > 5){
-				input |= (0b01 << (keypad_Map[i][j]));
-			}
-		}
-	}
-
-	return input;
-}
-
-void EXTI9_5_IRQHandler(){
-	if((EXTI->PR1 >> 7) & 0b01){
-		EXTI->PR1 |= (0b01 << 7);
-
-		keypad_Input = keypad_Read(&keypad_Gpio);
-	}
-	else if((EXTI->PR1 >> 8) & 0b01){
-		EXTI->PR1 |= (0b01 << 8);
-
-		keypad_Input = keypad_Read(&keypad_Gpio);
-	}
-	else if((EXTI->PR1 >> 9) & 0b01){
-		EXTI->PR1 |= (0b01 << 9);
-
-		keypad_Input = keypad_Read(&keypad_Gpio);
+	if(debounce_Cnt > 5){
+		debounce_Cnt = 5;
+		keypad_EXTI_Key = key;
 	}
 
 	return;
 }
 
+int keypad_Read(){
+	int read = keypad_EXTI_Key;
+	keypad_EXTI_Key = -1;
 
+	return read;
+}
+
+void TIM3_IRQHandler(){
+	TIM3->SR &= ~TIM_SR_UIF;
+
+	keypad_Gpio.out_Gpio[out_Pin_Index]->OTYPER |= (0b01 << (keypad_Gpio.out_Pin[out_Pin_Index]));
+
+	out_Pin_Index++;
+
+	if(out_Pin_Index == 4){
+		out_Pin_Index = 0;
+	}
+
+	keypad_Gpio.out_Gpio[out_Pin_Index]->OTYPER &= ~(0b01 << (keypad_Gpio.out_Pin[out_Pin_Index]));
+
+	return;
+}
+
+void EXTI9_5_IRQHandler(){
+	if((EXTI->PR1 >> 7) & 0b01){
+		EXTI->PR1 |= (0b01 << 7);
+		keypad_EXTI_Handle(keypad_Map[3][out_Pin_Index]);
+	}
+	else if((EXTI->PR1 >> 8) & 0b01){
+		EXTI->PR1 |= (0b01 << 8);
+		keypad_EXTI_Handle(keypad_Map[1][out_Pin_Index]);
+	}
+	else if((EXTI->PR1 >> 9) & 0b01){
+		EXTI->PR1 |= (0b01 << 9);
+		keypad_EXTI_Handle(keypad_Map[2][out_Pin_Index]);
+	}
+
+	return;
+}
+
+void EXTI15_10_IRQHandler(){
+	if((EXTI->PR1 >> 10) & 0b01){
+		EXTI->PR1 |= (0b01 << 10);
+		keypad_EXTI_Handle(keypad_Map[0][out_Pin_Index]);
+	}
+
+	return;
+}

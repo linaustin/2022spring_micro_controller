@@ -277,7 +277,7 @@ void display_Number_Float2(Seg_TypeDef* seg_Data, int number_float2){
 	int temp;
 	uint16_t total_Digit = 0;
 	uint8_t negative = 0;
-	uint8_t decimal = 1; // should be 0 but the timer will display 0.00 as the result set to 1;
+	uint8_t decimal = 0; // should be 0 but the timer will display 0.00 as the result set to 1;
 
 	if(number_float2 < 0){
 		number_float2 = number_float2 * -1;
@@ -285,11 +285,15 @@ void display_Number_Float2(Seg_TypeDef* seg_Data, int number_float2){
 		total_Digit++;
 	}
 
+	if(number_float2 == 0){
+		total_Digit++;
+	}
+
 	if(number_float2 % 100 != 0){
 		decimal = 1;
 	}
 
-	if(decimal || number_float2 == 0){
+	if(decimal){
 		temp = number_float2;
 
 		while(temp > 0){
@@ -334,7 +338,7 @@ void display_Number_Float2(Seg_TypeDef* seg_Data, int number_float2){
 		}
 	}
 	else{
-		number_float2 = number_float2/1000;
+		number_float2 = number_float2/100;
 		temp = number_float2;
 
 		while(temp > 0){
