@@ -41,6 +41,12 @@ void timer_Enable(TIM_TypeDef *tim){
 	else if(tim == TIM3){
 		RCC->APB1ENR1 |= RCC_APB1ENR1_TIM3EN;
 	}
+	else if(tim == TIM4){
+		RCC->APB1ENR1 |= RCC_APB1ENR1_TIM4EN;
+	}
+	else if(tim == TIM5){
+		RCC->APB1ENR1 |= RCC_APB1ENR1_TIM5EN;
+	}
 
 	return;
 }
@@ -52,6 +58,13 @@ void timer_Disable(TIM_TypeDef *tim){
 	else if(tim == TIM3){
 		RCC->APB1ENR1 &= ~RCC_APB1ENR1_TIM3EN;
 	}
+	else if(tim == TIM4){
+		RCC->APB1ENR1 &= ~RCC_APB1ENR1_TIM4EN;
+	}
+	else if(tim == TIM5){
+		RCC->APB1ENR1 &= ~RCC_APB1ENR1_TIM5EN;
+	}
+
 	return;
 }
 
@@ -66,8 +79,8 @@ void timer_Start(TIM_TypeDef *tim){
 }
 
 void timer_Start_IT(TIM_TypeDef *tim){
-	tim->CR1 |= TIM_CR1_CEN;
 	tim->DIER |= TIM_DIER_UIE;
+	tim->CR1 |= TIM_CR1_CEN;
 
 	return;
 }
@@ -78,8 +91,8 @@ void timer_Stop(TIM_TypeDef *tim){
 }
 
 void timer_Stop_IT(TIM_TypeDef *tim){
-	tim->CR1 &= ~TIM_CR1_CEN;
 	tim->DIER &= ~TIM_DIER_UIE;
+	tim->CR1 &= ~TIM_CR1_CEN;
 
 	return;
 }
@@ -103,13 +116,4 @@ void timer_Channel_Stop(TIM_TypeDef *tim, int channel){
 
 
 
-void __attribute__((weak)) TIM2_IRQHandler(){
-	TIM2->SR &= ~TIM_SR_UIF;
-	return;
-}
-
-void __attribute__((weak)) TIM3_IRQHandler(){
-	TIM3->SR &= ~TIM_SR_UIF;
-	return;
-}
 

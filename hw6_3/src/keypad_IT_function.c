@@ -36,6 +36,7 @@ const int  keypad_Map[4][4] = {
 int out_Pin_Index = 0;
 int last_Key = 0;
 int debounce_Cnt = 0;
+int keypad_EXTI_Key = -1;
 
 int keypad_IT_Init(){
 	system_Clock_Config(&sysclk_40Mhz);
@@ -99,13 +100,13 @@ int keypad_IT_Init(){
 
 	NVIC_SetPriorityGrouping(0b101);	//set 2 group priorities 2 sub priorities
 
-	NVIC_SetPriority(EXTI9_5_IRQn, 0b0000);
+	NVIC_SetPriority(EXTI9_5_IRQn, 0b0100);
 	NVIC_EnableIRQ(EXTI9_5_IRQn);
 
-	NVIC_SetPriority(EXTI15_10_IRQn, 0b0000);
+	NVIC_SetPriority(EXTI15_10_IRQn, 0b0100);
 	NVIC_EnableIRQ(EXTI15_10_IRQn);
 
-	NVIC_SetPriority(TIM3_IRQn, 0b0100);
+	NVIC_SetPriority(TIM3_IRQn, 0b1000);
 	NVIC_EnableIRQ(TIM3_IRQn);
 
 	Timer_Init_Data keypad_Timer ={
@@ -162,6 +163,7 @@ void keypad_EXTI_Handle(int key){
 
 int keypad_Read(){
 	int read = keypad_EXTI_Key;
+	delay_Loop(500);
 	keypad_EXTI_Key = -1;
 
 	return read;

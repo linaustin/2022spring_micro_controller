@@ -18,5 +18,4 @@ void clock_Alarming();
 void clock_Display(int *time_Data);
 
 
-void TIM4_IRQHandler();
 #endif
