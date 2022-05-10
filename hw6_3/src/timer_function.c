@@ -31,6 +31,8 @@ void timer_PWM_Init(TIM_TypeDef *tim, Timer_PWM_Init_Data *timer_Data){
 		tim->CCER |= (0 << TIM_CCER_CC1E_Pos); // disable channel 1 output
 	}
 
+	tim->EGR |= TIM_EGR_UG;
+
 	return;
 }
 

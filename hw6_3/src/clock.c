@@ -154,7 +154,6 @@ void clock_Alarming(){
 
 	timer_Enable(TIM2);
 	timer_PWM_Init(TIM2, &timer_PWM);
-	timer_Reload(TIM2);
 	timer_Start(TIM2);
 	timer_Channel_Start(TIM2, 1);
 
