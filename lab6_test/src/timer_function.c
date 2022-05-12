@@ -31,6 +31,8 @@ void timer_PWM_Init(TIM_TypeDef *tim, Timer_PWM_Init_Data *timer_Data){
 		tim->CCER |= (0 << TIM_CCER_CC1E_Pos); // disable channel 1 output
 	}
 
+	tim->EGR |= TIM_EGR_UG;
+
 	return;
 }
 
@@ -79,8 +81,8 @@ void timer_Start(TIM_TypeDef *tim){
 }
 
 void timer_Start_IT(TIM_TypeDef *tim){
-	tim->CR1 |= TIM_CR1_CEN;
 	tim->DIER |= TIM_DIER_UIE;
+	tim->CR1 |= TIM_CR1_CEN;
 
 	return;
 }
@@ -91,8 +93,8 @@ void timer_Stop(TIM_TypeDef *tim){
 }
 
 void timer_Stop_IT(TIM_TypeDef *tim){
-	tim->CR1 &= ~TIM_CR1_CEN;
 	tim->DIER &= ~TIM_DIER_UIE;
+	tim->CR1 &= ~TIM_CR1_CEN;
 
 	return;
 }
@@ -116,13 +118,4 @@ void timer_Channel_Stop(TIM_TypeDef *tim, int channel){
 
 
 
-void __attribute__((weak)) TIM2_IRQHandler(){
-	TIM2->SR &= ~TIM_SR_UIF;
-	return;
-}
-
-void __attribute__((weak)) TIM3_IRQHandler(){
-	TIM3->SR &= ~TIM_SR_UIF;
-	return;
-}
 

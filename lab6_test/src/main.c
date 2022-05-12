@@ -1,21 +1,18 @@
 #include "stm32l476xx.h"
-#include "7seg_function.h"
-#include "system_function.h"
-#include "gpio_function.h"
-#include "keypad_IT_function.h"
-
-
-Seg_TypeDef seg_Gpio = {
-	.gpio = GPIOC,
-	.DIN = 1,
-	.CS = 2,
-	.CLK = 3
-};
+#include "clock.h"
 
 int main(){
 
+	if(clock_Init() != 0){
+		return -1;
+	}
+
+	while(1){
+		clock_Config();
+		clock_Counting();
+		clock_Alarming();
+	}
 
 	return 0;
 }
-
 

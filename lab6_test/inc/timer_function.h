@@ -29,7 +29,4 @@ void timer_Stop_IT(TIM_TypeDef *tim);
 void timer_Channel_Start(TIM_TypeDef *tim, int channel);
 void timer_Channel_Stop(TIM_TypeDef *tim, int channel);
 
-void __attribute__((weak)) TIM2_IRQHandler();
-void __attribute__((weak)) TIM3_IRQHandler();
-
 #endif

@@ -15,15 +15,21 @@ typedef struct keypad_Struct{
 }Keypad_TypeDef;
 
 Keypad_TypeDef keypad_Gpio;
+
 const int  keypad_Map[4][4];
 int out_Pin_Index;
-uint16_t keypad_Input;
+int last_Key;
+int debounce_Cnt;
+
+int keypad_EXTI_Key;
 
 int keypad_IT_Init();
-void keypad_EXTI_config(GPIO_TypeDef *gpio, int pin);
-uint16_t keypad_Read(Keypad_TypeDef* keypad_Data);
+void keypad_EXTI_Config(GPIO_TypeDef *gpio, int pin);
+void keypad_EXTI_Handle(int key);
+int keypad_Read();
 
+void TIM3_IRQHandler();
 void EXTI9_5_IRQHandler();
-
+void EXTI15_10_IRQHandler();
 
 #endif
