@@ -45,7 +45,7 @@ gpio_init:
 	AND R1, R2
 	STR R1, [R0]
 
-	//setting GPIOC_MODER¡@to input mode
+	//setting GPIOC_MODER to input mode
 	LDR R0, =GPIOC_MODER
 	LDR R1, [R0]
 	AND R1, #0xFFFFFF00
